@@ -63,6 +63,48 @@ class StackController extends Controller
         return new Response($stack);
     }
     /**
+     * @Route("/{stackUri}/email")
+     * @Method("POST")
+     *
+     * return Response
+     */
+    public function email(Request $request)
+    {
+        $email = $request->request->get('email');
+        $stackUri = $request->request->get('uri');
+
+        // $em = $this->getDoctrine()->getManager();
+        // $stack = $em->getRepository('ApiBundle:Stack')->findOneBy(array('uri' => $stackUri));
+        // if(!$stack){
+        //      throw $this->createNotFoundException('The stack does not exist');
+        // }
+        //
+        // $user = new User();
+        // $user->setEmail($email);
+        // $em->persist($user);
+        //
+        // $stack->setUser($user);
+        // $em->flush();
+        //
+        // $serializer = $this->container->get('jms_serializer');
+        // $user = $serializer->serialize($user, 'json');
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Link to your Flshcrds.')
+            ->setFrom('no-reply@flshcrds.com')
+            ->setTo('nothing_more@me.com')
+            ->setBody(
+                $this->renderView(
+                'emails/uri.html.twig',
+                array('uri' => $stackUri)
+            ),
+            'text/html'
+            );
+        $this->get('mailer')->send($message);
+
+        return new Response(200);
+    }
+    /**
      * @Route("/{stackUri}/secure")
      * @Method("POST")
      *
